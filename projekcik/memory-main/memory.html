@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        #rekordy {
+            height: 500px;
+            width: 900px;
+            display: flex
+        }
+
+        #rekordy_30 {
+            width: 300px;
+        }
+
+        #rekordy_60 {
+            width: 300px;
+        }
+
+        #rekordy_90 {
+            width: 300px;
+        }
+
+        #main {
+            width: 1000px;
+            height: 600px;
+        }
+
+        img {
+            width: 250px;
+            height: 250px;
+        }
+
+        .czolowa {
+            height: 400px;
+            width: 400px;
+            position: absolute;
+            top: 20%;
+            left: 36%;
+        }
+
+        .koniec {
+            width: 100%;
+            height: 100%;
+        }
+
+        .otoczka {
+            width: 800px;
+            height: 100px;
+            border: red 1px solid;
+            max-width: 800px;
+        }
+
+        .czas {
+            height: 100px;
+            background-color: gray;
+            max-width: 800px;
+            transition-timing-function: linear;
+        }
+
+        * {
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+    </style>
+    <map name="image-map">
+        <area target="" alt="trzysek" title="trzysek" href="#" coords="43,39,335,60,68,151" shape="poly"
+            onclick="Funkcja(30)">
+        <area target="" alt="szescsek" title="szescsek" href="#" coords="76,217,362,232,339,108" shape="poly"
+            onclick="Funkcja(60)">
+        <area target="" alt="dziewiecsek" title="dziewiecsek" href="#" coords="91,265,368,298,113,379" shape="poly"
+            onclick="Funkcja(90)">
+        <div id="main">
+            <div id="tytul">
+                <h1>GRA MEMORY</h1>
+            </div>
+            <img src="./img/czolowa.png" usemap="#image-map" class="czolowa">
+        </div>
+        <div id="rekordy">
+            <div id="rekordy_30">
+                <table id="rekordy_30_t">
+                </table>
+            </div>
+            <div id="rekordy_60">
+                <table id="rekordy_60_t">
+                </table>
+
+            </div>
+            <div id="rekordy_90">
+                <table id="rekordy_90_t">
+                </table>
+
+            </div>
+        </div>
+    </map>
+</body>
+<script>
+    let cookie_string = ""
+    let now = new Date();
+    let time = now.getTime();
+    let expireTime = time + 1000 * 36000 * 20 * 10;
+    now.setTime(expireTime);
+    console.log(now)
+    window.addEventListener("load", function () {
+        let placeholder_cookie = ""
+    })
+    rekordy = {}
+    ciastka = []
+    function create_rekordy() {
+
+        if (document.cookie == '') {
+            document.cookie = `rekordy_30=;;Expires=${now}`
+            document.cookie = `rekordy_60=;;Expires=${now}`
+            document.cookie = `rekordy_90=;;Expires=${now}`
+            rekordy["rekordy_30"] = []
+            rekordy["rekordy_60"] = []
+            rekordy["rekordy_90"] = []
+        }
+        placeholder_cookie = document.cookie
+        document.cookie = `rekordy_30=;;Expires=${now}`
+        document.cookie = `rekordy_60=;;Expires=${now}`
+        document.cookie = `rekordy_90=;;Expires=${now}`
+        rekordy["rekordy_30"] = []
+        rekordy["rekordy_60"] = []
+        rekordy["rekordy_90"] = []
+        placeholder_length = placeholder_cookie.split(";").length
+        for (let ciastko = 0; ciastko < placeholder_length; ciastko++) {
+            cookie_string = ""
+            let obecne_ciastko = placeholder_cookie.split(";")[ciastko].split("=")[0].trim()
+            for (let wyniki = 0; wyniki < placeholder_cookie.split(";")[ciastko].split("=")[1].split(",").length - 1; wyniki++) {
+                rekordy[obecne_ciastko].push({ nick: placeholder_cookie.split(";")[ciastko].split("=")[1].split(",")[wyniki].split(":")[0], czas: placeholder_cookie.split(";")[ciastko].split("=")[1].split(",")[wyniki].split(":")[1] })
+            }
+            cookie_string += obecne_ciastko + "="
+            for (let index = 0; index < rekordy[obecne_ciastko].length; index++) {
+                cookie_string += `${rekordy[obecne_ciastko][index]["nick"]}:${rekordy[obecne_ciastko][index]["czas"]},`
+            }
+            cookie_string += `;Expires=${now}`
+            ciastka[ciastko] = cookie_string
+            document.cookie = cookie_string
+        }
+    }
+
+    function update_rekordy() {
+
+        placeholder_cookie = document.cookie
+        placeholder_length = placeholder_cookie.split(";").length
+        for (let ciastko = 0; ciastko < placeholder_length; ciastko++) {
+            cookie_string = ""
+            let obecne_ciastko = placeholder_cookie.split(";")[ciastko].split("=")[0].trim()
+            cookie_string += obecne_ciastko + "="
+            for (let index = 0; index < rekordy[obecne_ciastko].length; index++) {
+                cookie_string += `${rekordy[obecne_ciastko][index]["nick"]}:${rekordy[obecne_ciastko][index]["czas"]},`
+            }
+            cookie_string += ``
+            ciastka[ciastko] = cookie_string
+        }
+        document.cookie = cookie_string
+    }
+    function update_cookies() {
+        for (let indexik = 0; indexik < ciastka.length; indexik++) {
+            document.cookie = ciastka[indexik] + `;Expires=${now}`
+        }
+    }
+    create_rekordy()
+    let Wprowadz
+    let pozostałyczas = 0
+    let obr1 = ""
+    let obr2 = ""
+    let flaga = true
+    let sprawdz = 0
+    let pary = []
+    let zabezpiecz = false
+    let szer = 800
+    let czasstart = false
+    let start = 0
+    let startczas = 0
+    let cały_czas = 0
+    let nowyczas = false
+    let tytul = document.createElement("div")
+    let napis = document.createElement("h1")
+    let tabela_rekordy_30 = document.getElementById("rekordy_30_t")
+    let tabela_rekordy_60 = document.getElementById("rekordy_60_t")
+    let tabela_rekordy_90 = document.getElementById("rekordy_90_t")
+    let rekordy_tabele = document.getElementById("rekordy")
+    // rekordy["rekordy_30"] = rekordy["rekordy_30"].sort((a, b) => { return a.czas - b.czas })
+    // rekordy["rekordy_60"] = rekordy["rekordy_60"].sort((a, b) => { return a.czas - b.czas })
+    // rekordy["rekordy_90"] = rekordy["rekordy_90"].sort((a, b) => { return a.czas - b.czas })
+    function rysuj_tabele() {
+        rekordy["rekordy_30"] = rekordy["rekordy_30"].sort((a, b) => { return a.czas - b.czas })
+        rekordy["rekordy_60"] = rekordy["rekordy_60"].sort((a, b) => { return a.czas - b.czas })
+        rekordy["rekordy_90"] = rekordy["rekordy_90"].sort((a, b) => { return a.czas - b.czas })
+        let row = tabela_rekordy_30.insertRow(0)
+        let cell1 = row.insertCell(0)
+        let cell2 = row.insertCell(1)
+        cell1.innerHTML = "<th>Nick:</th>"
+        cell2.innerHTML = "<th>Czas:</th>"
+        row = tabela_rekordy_60.insertRow(0)
+        cell1 = row.insertCell(0)
+        cell2 = row.insertCell(1)
+        cell1.innerHTML = "<th>Nick:</th>"
+        cell2.innerHTML = "<th>Czas:</th>"
+        row = tabela_rekordy_90.insertRow(0)
+        cell1 = row.insertCell(0)
+        cell2 = row.insertCell(1)
+        cell1.innerHTML = "<th>Nick:</th>"
+        cell2.innerHTML = "<th>Czas:</th>"
+        row = tabela_rekordy_30.insertRow(0)
+        cell1 = row.insertCell(0)
+        cell1.innerHTML = "<th>Rekordy_30</th>"
+        row = tabela_rekordy_60.insertRow(0)
+        cell1 = row.insertCell(0)
+        cell1.innerHTML = "<th>Rekordy_60</th>"
+        row = tabela_rekordy_90.insertRow(0)
+        cell1 = row.insertCell(0)
+        cell1.innerHTML = "<th>Rekordy_90</th>"
+        for (let i = 0; i < rekordy["rekordy_30"].length; i++) {
+             row = tabela_rekordy_30.insertRow(2)
+             cell1 = row.insertCell(0)
+             cell2 = row.insertCell(1)
+            cell1tekst = rekordy["rekordy_30"][i]["nick"]
+            cell1.innerHTML = decodeURIComponent(cell1tekst)
+            minuty = Math.floor(rekordy["rekordy_30"][i]["czas"] / 60000)
+            sekundy = (rekordy["rekordy_30"][i]["czas"] - (minuty * 60000)) / 1000
+            if (sekundy < 10) {
+                cell2.innerHTML = "0" + minuty + ":0" + sekundy
+            } else {
+                cell2.innerHTML = "0" + minuty + ":" + sekundy
+            }
+        } for (let i = 0; i < rekordy["rekordy_60"].length; i++) {
+            row = tabela_rekordy_60.insertRow(2)
+            cell1 = row.insertCell(0)
+            cell2 = row.insertCell(1)
+            cell1tekst = rekordy["rekordy_60"][i]["nick"]
+            cell1.innerHTML = decodeURIComponent(cell1tekst)
+            minuty = Math.floor(rekordy["rekordy_60"][i]["czas"] / 60000)
+            sekundy = (rekordy["rekordy_60"][i]["czas"] - (minuty * 60000)) / 1000
+            if (sekundy < 10) {
+                cell2.innerHTML = "0" + minuty + ":0" + sekundy
+            } else {
+                cell2.innerHTML = "0" + minuty + ":" + sekundy
+            }
+        } for (let i = 0; i < rekordy["rekordy_90"].length; i++) {
+            row = tabela_rekordy_90.insertRow(2)
+            cell1 = row.insertCell(0)
+            cell2 = row.insertCell(1)
+            cell1tekst = rekordy["rekordy_90"][i]["nick"]
+            cell1.innerHTML = decodeURIComponent(cell1tekst)
+            minuty = Math.floor(rekordy["rekordy_90"][i]["czas"] / 60000)
+            sekundy = (rekordy["rekordy_90"][i]["czas"] - (minuty * 60000)) / 1000
+            if (sekundy < 10) {
+                cell2.innerHTML = "0" + minuty + ":0" + sekundy
+            } else {
+                cell2.innerHTML = "0" + minuty + ":" + sekundy
+            }
+        }
+    }
+    rysuj_tabele()
+    function odkryj() {
+        if (nowyczas == false) {
+            startczas = new Date().getTime() + (cały_czas * 1000)
+            nowyczas = true
+        }
+        if (flaga == true && pary.includes(this.src) == false && this.name == "hidden" && zabezpiecz == false) {
+            obr1 = this
+            obr1.src = "img/" + newArray[obr1.id] + ".jpg"
+            obr1.name = "revealed"
+            flaga = false
+            sprawdz = 0
+            czasstart = true
+        } else if (flaga == false && pary.includes(this.src) == false && this.name == "hidden" && zabezpiecz == false) {
+            obr2 = this
+            obr2.src = "img/" + newArray[obr2.id] + ".jpg"
+            obr2.name = "revealed"
+            flaga = true
+            sprawdz = 1
+            zabezpiecz = true
+        }
+        if (sprawdz) {
+            if (obr1.src == obr2.src && pary.includes(this.src) == false && obr1.name == obr2.name && obr1.id != obr2.id) {
+                pary.push(obr1.src)
+                zabezpiecz = false
+                obr1.removeEventListener("click", odkryj)
+                obr2.removeEventListener("click", odkryj)
+            } else if (pary.includes(this.src == true)) {
+            }
+            else if (obr1.src != obr2.src) {
+                setTimeout(() => {
+                    obr1.src = "img/0.jpg"
+                    obr2.src = "img/0.jpg"
+                    obr1.name = "hidden"
+                    obr2.name = "hidden"
+                    zabezpiecz = false
+                }, 200)
+            }
+            else if (obr1.id == obr2.id) {
+                setTimeout(() => {
+                    obr1.src = "img/0.jpg"
+                    obr2.src = "img/0.jpg"
+                    obr1.name = "hidden"
+                    obr2.name = "hidden"
+                    zabezpiecz = false
+                }, 500)
+            }
+        }
+    }
+    function shuffle() {
+        newArray = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8]
+        // const numery = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        // for (let i = 0; i < obr.length; i++) {
+        //     let los = Math.floor(Math.random() * numery.length)
+        //     if (numery[los] != undefined) {
+        //         newArray.push(obr[los])
+        //         delete numery[los]
+        //     } else {
+        //         i = i - 1
+        //     }
+        // }
+        return newArray;
+        let cialo = document.getElementsByClassName("body")
+    }
+    function koniec() {
+        if (pary.length == 8) {
+            main.replaceChildren()
+            const koniec = document.createElement("img");
+            koniec.src = "img/koniec.png"
+            koniec.classList.add("koniec")
+            document.querySelector("#main").append(koniec);
+            const przycisk = document.createElement("button")
+            przycisk.type = "submit"
+            przycisk.innerText = "Kliknij aby zagrać ponownie!"
+            przycisk.setAttribute("onclick", 'reset()')
+            document.querySelector("#main").append(przycisk);
+            czasstart = false
+            pary = []
+            console.log(cały_czas)
+            Wprowadz = document.createElement("input")
+            Wprowadz.type = Text
+            Wprowadz.innerText = "Wprowadz nick: "
+            document.querySelector("#main").append(Wprowadz)
+        }
+    }
+
+
+    let div = document.getElementById("main")
+    let randomowy = 0
+    const obr = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
+
+    function Funkcja(x) {
+        shuffle();
+
+        nowyczas = false
+        flaga = true
+        sprawdz = 0
+        pary = []
+        zabezpiecz = false
+        szer = 800
+        czasstart = false
+        obr1 = ""
+        obr2 = ""
+        cały_czas = x
+        pozostałyczas = 0
+        // rekordy_tabele.replaceChildren()
+        div.replaceChildren()
+        rekordy_tabele.setAttribute("style", "display:none;")
+        const outer = document.createElement("div")
+        outer.classList.add("otoczka")
+        const czasomierz = document.createElement("div")
+        czasomierz.classList.add("czas")
+        outer.append(czasomierz)
+        document.querySelector("#main").append(outer)
+        czasomierz.setAttribute("style", "width: 800px; " + "transition-duration:" + x + "s;" + "transition-property: width;")
+        czasstart = false
+        let czasik = setInterval(() => {
+            if (czasstart) {
+                let zmiana = new Date()
+                pozostałyczas = startczas - zmiana.getTime()
+                minuty = Math.floor(pozostałyczas / 60000)
+                sekundy = (pozostałyczas - (minuty * 60000)) / 1000
+                if (sekundy < 10) {
+                    czasomierz.innerText = "0" + minuty + ":0" + sekundy
+                } else {
+                    czasomierz.innerText = "0" + minuty + ":" + sekundy
+                }
+                if (pozostałyczas < 0) {
+                    clearInterval(czasik)
+                    div.replaceChildren()
+                    const koniec = document.createElement("img");
+                    koniec.src = "img/zlykoniec.png"
+                    koniec.classList.add("koniec")
+                    document.querySelector("#main").append(koniec);
+                    const przycisk = document.createElement("button")
+                    document.querySelector("#main")
+                    przycisk.type = "submit"
+                    przycisk.innerText = "Kliknij aby zagrać ponownie!"
+                    przycisk.setAttribute("onclick", 'reset()')
+                    document.querySelector("#main").append(przycisk);
+                }
+            }
+        }, 1);
+        function startujczas() {
+            if (czasstart == true) {
+                kroki = (x * 1000)
+                czasduration = x
+                czasomierz.setAttribute("style", "width: 0px; " + "transition-duration:" + czasduration + "s;" + "transition-property: width;" + "transition-timing-function: steps(" + kroki + ", end);")
+            }
+        }
+
+        napis.innerText = "MEMORY[" + x + "s]"
+        tytul.appendChild(napis)
+        document.querySelector("#main").append(tytul)
+        for (let i = 0; i < newArray.length; i++) {
+            const el = document.createElement("img");
+            el.src = "img/" + 0 + ".jpg"
+            el.id = i
+            el.setAttribute("name", "hidden")
+            el.addEventListener("click", odkryj)
+            el.addEventListener("click", koniec)
+            el.addEventListener("click", startujczas)
+            document.querySelector("#main").append(el);
+
+        }
+    }
+    function reset() {
+        switch (cały_czas) {
+            case (30):
+                {
+                    setTimeout(() => {
+                        let nick = Wprowadz.value
+                        nick = encodeURIComponent(nick)
+                        if (rekordy["rekordy_30"] == undefined) {
+                            rekordy["rekordy_30"] = []
+                        }
+                        rekordy["rekordy_30"].push({ nick: nick, czas: (cały_czas * 1000 - pozostałyczas) })
+                        update_rekordy()
+                        update_cookies()
+                    }, 1)
+                    break
+                }
+            case (60):
+                {
+                    setTimeout(() => {
+                        console.log(rekordy["rekordy_60"])
+                        let nick = Wprowadz.value
+                     nick = encodeURIComponent(nick)
+                        if (rekordy["rekordy_60"] == undefined) {
+                            rekordy["rekordy_60"] = []
+                        }
+                        rekordy["rekordy_60"].push({ nick: nick, czas: (cały_czas * 1000 - pozostałyczas) })
+                        update_rekordy()
+                        update_cookies()
+                    }, 1)
+                    break
+                }
+            case (90):
+                {
+                    setTimeout(() => {
+                        if (rekordy["rekordy_90"] == undefined) {
+                            rekordy["rekordy_90"] = []
+                        }
+                        let nick = Wprowadz.value
+                        nick = encodeURIComponent(nick)
+                        rekordy["rekordy_90"].push({ nick: nick, czas: (cały_czas * 1000 - pozostałyczas) })
+                        update_rekordy()
+                        update_cookies()
+                    }, 1)
+                    break
+                }
+        }
+        setTimeout(() => {
+
+
+            let main = document.getElementById("main")
+            div.replaceChildren()
+            tabela_rekordy_30.replaceChildren()
+            tabela_rekordy_60.replaceChildren()
+            tabela_rekordy_90.replaceChildren()
+            napis.innerText = "GRA MEMORY"
+            main.append(tytul)
+            let czolowka = document.createElement("img")
+            czolowka.src = "./img/czolowa.png"
+            czolowka.classList.add("czolowa")
+            czolowka.useMap = "#image-map"
+            main.append(czolowka)
+            rysuj_tabele()
+            rekordy_tabele.setAttribute("style", "display:flex;")
+        }, 1)
+    }
+</script>

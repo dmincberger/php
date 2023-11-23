@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body onkeypress="Ruch.Kpress(event)">
+    <div id="plansza">
+    </div>
+</body>
+<script>
+    class Gracz {
+    constructor(dlugosc){
+        this.Gracz = document.createElement("div")
+        this.Gracz.classList.add("gracz")
+    }
+
+    Getgracz(){
+        return this.Gracz
+    }
+}
+gracz_budulec = new Gracz
+gracz = gracz_budulec.Getgracz()
+    Strefa_gry = {
+        plansza: document.getElementById("plansza"),
+        Generacja_pol: function() {
+        for (let row = 0; row < 21; row++){
+            for(let col = 0; col < 21; col++){
+                this.pole = document.createElement("div")
+                this.pole.classList.add("pole")
+                this.pole.id = `${row},${col}`
+                this.plansza.appendChild(this.pole)
+            }
+        }
+    },
+    pola: document.querySelector("#plansza").children,
+    Spawn_gracza: function(){
+        this.pola[Math.floor(this.pola.length/2)].appendChild(gracz)
+    }
+}
+
+
+
+Tablica_gry = {
+    Tabela: [],
+    Generacja_tablica: function(){
+        for (let row = 0; row < 21; row++){
+            this.Tabela.push([])
+            for (let col = 0; col < 21; col++){
+                this.Tabela[row].push(0)
+            }
+        }
+    }
+}
+
+
+
+Ruch = {
+    gracz: gracz,
+    Kpress: function(event){
+        gracz_budulec = new Gracz
+        gracz = gracz_budulec.Getgracz()
+        console.log(event.which);
+        if(event.which == 119){
+            console.log(this.gracz.parentNode);
+            Strefa_gry
+        }
+        
+    }
+}
+
+Tablica_gry.Generacja_tablica()
+Strefa_gry.Generacja_pol()
+Strefa_gry.Spawn_gracza()
+</script>
+</html>
