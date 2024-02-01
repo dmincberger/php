@@ -1,0 +1,14 @@
+SELECT COUNT(`zawodnicy`.`ID_kraju`)
+FROM `zawodnicy`
+INNER JOIN `kraje` ON `kraje`.`ID_kraju`=`zawodnicy`.`ID_kraju`
+WHERE `kraje`.`Kraj`="Polska"
+
+SELECT COUNT(`zawodnicy`.`ID_kraju`)
+FROM `zawodnicy`
+INNER JOIN `kraje` ON `kraje`.`ID_kraju`=`zawodnicy`.`ID_kraju`
+WHERE `kraje`.`Kraj`="Polska"
+
+SELECT `zawodnicy`.`Imie`,`zawodnicy`.`Nazwisko`
+FROM `zawodnicy`
+INNER JOIN `wyniki` ON `wyniki`.`ID_zawodnika`=`zawodnicy`.`ID_zawodnika`
+WHERE 
